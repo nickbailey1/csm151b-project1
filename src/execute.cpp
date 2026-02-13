@@ -117,31 +117,31 @@ uint32_t Core::branch_unit(const Instr &instr, uint32_t rs1_data, uint32_t rs2_d
     break;
   case BrOp::JAL:
   case BrOp::JALR: {
-    br_taken = // TODO:
+    br_taken = true;
     break;
   }
   case BrOp::BEQ: {
-    br_taken = // TODO:
+    br_taken = (rs1_data == rs2_data);
     break;
   }
   case BrOp::BNE: {
-    br_taken = // TODO:
+    br_taken = (rs1_data != rs2_data);
     break;
   }
   case BrOp::BLT: {
-    br_taken = // TODO:
+    br_taken = ((int32_t)rs1_data < (int32_t)rs2_data);
     break;
   }
   case BrOp::BGE: {
-    br_taken = // TODO:
+    br_taken = ((int32_t)rs1_data >= (int32_t)rs2_data);
     break;
   }
   case BrOp::BLTU: {
-    br_taken = // TODO:
+    br_taken = (rs1_data < rs2_data);
     break;
   }
   case BrOp::BGEU: {
-    br_taken = // TODO:
+    br_taken = (rs1_data >= rs2_data);
     break;
   }
   default:
