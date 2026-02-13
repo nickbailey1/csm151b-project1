@@ -450,24 +450,24 @@ std::shared_ptr<Instr> Core::decode(uint32_t instr_code) const {
   }
   case Opcode::JAL: {
     exe_flags.alu_s1_PC = 1;
-    alu_op = // TODO:
-    br_op = // TODO:
+    alu_op = AluOp::ADD;
+    br_op = BrOp::JAL;
     break;
   }
   case Opcode::JALR: {
-    alu_op = // TODO:
-    br_op = // TODO:
+    alu_op = AluOp::ADD;
+    br_op = BrOp::JALR;
     break;
   }
   case Opcode::L: {
     // RV32I: LB, LH, LW, LBU, LHU
-    alu_op = // TODO:
+    alu_op = AluOp::ADD;
     exe_flags.is_load = 1;
     break;
   }
   case Opcode::S: {
     // RV32I: SB, SH, SW
-    alu_op = // TODO:
+    alu_op = AluOp::ADD;
     exe_flags.is_store = 1;
     break;
   }
