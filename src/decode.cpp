@@ -391,7 +391,37 @@ std::shared_ptr<Instr> Core::decode(uint32_t instr_code) const {
     break;
   }
   case Opcode::I: {
-    alu_op = // TODO: 
+    switch (func3) {
+      case 0:
+        alu_op = AluOp::ADD;
+        break;
+      case 1:
+        alu_op = AluOp::SLL;
+        break;
+      case 2:
+        alu_op = AluOp::LTI;
+        break;
+      case 3:
+        alu_op = AluOp::LTU;
+        break;
+      case 4:
+        alu_op = AluOp::XOR;
+        break;
+      case 5:
+        if (func7 & 0x20) {
+          alu_op = AluOp::SRA;
+        } else {
+          alu_op = AluOp::SRL;
+        }
+        break;
+      case 6:
+        alu_op = AluOp::OR;
+        break;
+      case 7:
+        alu_op = AluOp::AND;
+        break;
+    }
+    break;
   }
   case Opcode::B: {
     exe_flags.alu_s1_PC = 1;
