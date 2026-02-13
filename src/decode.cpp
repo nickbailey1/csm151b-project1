@@ -425,8 +425,27 @@ std::shared_ptr<Instr> Core::decode(uint32_t instr_code) const {
   }
   case Opcode::B: {
     exe_flags.alu_s1_PC = 1;
-    alu_op = // TODO:
-    br_op = // TODO:
+    alu_op = AluOp::ADD;
+    switch (func3) {
+      case 0:
+        br_op = BrOp::BEQ;
+        break;
+      case 1:
+        br_op = BrOp::BNE;
+        break;
+      case 4:
+        br_op = BrOp::BLT;
+        break;
+      case 5:
+        br_op = BrOp::BGE;
+        break;
+      case 6:
+        br_op = BrOp::BLTU;
+        break;
+      case 7:
+        br_op = BrOp::BGEU;
+        break;
+    }
     break;
   }
   case Opcode::JAL: {
