@@ -300,7 +300,7 @@ std::shared_ptr<Instr> Core::decode(uint32_t instr_code) const {
     exe_flags.use_rd  = 1;
     exe_flags.use_imm = 1;
     exe_flags.alu_s2_imm = 1;
-    imm = sext(((instr_code >> 31) << 20) | (((instr_code >> 12) & 0xff) << 12) | (((instr_code >> 20) & 0x8) << 11) |  (((instr_code >> 21) & 0x3ff) << 1), 21);
+    imm = sext(((instr_code >> 31) << 20) | (((instr_code >> 12) & 0xff) << 12) | (((instr_code >> 20) & 0x1) << 11) |  (((instr_code >> 21) & 0x3ff) << 1), 21);
   } break;
 
   default:

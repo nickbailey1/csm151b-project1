@@ -186,6 +186,20 @@ bool Core::check_data_hazards(const Instr &instr) {
   if (!ex_mem_.empty()) {
     auto& ex_data = ex_mem_.data();
     // TODO: check LDAD instruction data hazards in EX/MEM
+    auto& ex_instr = *ex_data.instr;
+    auto ex_flags = ex_instr.getExeFlags();
+
+    // check load-use hazard (LOAD instr in EX or MEM stage cuhhhh)
+    if (ex_flags.is_load && ex_flags.use_rd) {
+      uint32_t ex_rd = ex_instr.getRd();
+      // does curr instr depend on load result?
+      if ((exe_flags.use_rs1 && instr.getRs1() == ex_rd && ex_rd != 0)
+       || (exe_flags.use_rs2 && instr.getRs2() == ex_rd && ex_rd != 0)) {
+        // need to stall
+        DT(2, "Load-use hazard, stalling (#" << if_id_.data().uuid << ")");
+        return true;
+      }
+    }
   }
 
   return false;
@@ -198,12 +212,28 @@ bool Core::data_forwarding(uint32_t reg, uint32_t* data) {
     auto& ex_data = ex_mem_.data();
     auto& ex_instr = *ex_data.instr;
     // TODO: check data forwarding from EX/MEM
+    auto ex_flags = ex_instr.getExeFlags();
+    // forward from EX/MEM if instr writes to rd, and rd == reg yuh
+    if (ex_flags.use_rd && ex_instr.getRd() == reg && reg != 0) {
+      // for load, wait til MEM/WB
+      if (!ex_flags.is_load) {
+        *data = ex_data.result;
+        forwarded = true;
+        DT(2, "Data forwarding from EX/MEM: reg = " << reg << ", data = 0x" << std::hex << *data << std::dec << " (#" << if_id_.data().uuid << ")");
+      }
+    }
   }
 
   if (!forwarded && !mem_wb_.empty()) {
     auto& mem_data = mem_wb_.data();
     auto& mem_instr = *mem_data.instr;
     // TODO: check data forwarding from MEM/WB
+    auto mem_flags = mem_instr.getExeFlags();
+    if (mem_flags.use_rd && mem_instr.getRd() == reg && reg != 0) {
+      *data = mem_data.result;
+      forwarded = true;
+      DT(2, "data forwarding from MEM/RB: reg = " << reg << ", data = 0x" << std::hex << *data << std::dec << " (#" << if_id_.data().uuid << ")");
+    }
   }
 
   return forwarded;
