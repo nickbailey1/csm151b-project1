@@ -69,35 +69,35 @@ uint32_t Core::alu_unit(const Instr &instr, uint32_t rs1_data, uint32_t rs2_data
     break;
   }
   case AluOp::AND: {
-    rd_data = 
+    rd_data = alu_s1 & alu_s2;
     break;
   }
   case AluOp::OR: {
-    rd_data = // TODO:
+    rd_data = alu_s1 | alu_s2;
     break;
   }
   case AluOp::XOR: {
-    rd_data = // TODO:
+    rd_data = alu_s1 ^ alu_s2;
     break;
   }
   case AluOp::SLL: {
-    rd_data = // TODO:
+    rd_data = alu_s1 << (alu_s2 & 0x1f);
     break;
   }
   case AluOp::SRL: {
-    rd_data = // TODO:
+    rd_data = alu_s1 >> (alu_s2 & 0x1f);
     break;
   }
   case AluOp::SRA: {
-    rd_data = // TODO:
+    rd_data = (uint32_t)((int32_t)alu_s1 >> (alu_s2 & 0x1f));
     break;
   }
   case AluOp::LTI: {
-    rd_data = // TODO:
+    rd_data = ((int32_t)alu_s1 < (int32_t)alu_s2) ? 1 : 0;
     break;
   }
   case AluOp::LTU: {
-    rd_data = // TODO:
+    rd_data = (alu_s1 < alu_s2) ? 1 : 0;
     break;
   }
   default:
