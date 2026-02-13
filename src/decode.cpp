@@ -245,7 +245,7 @@ std::shared_ptr<Instr> Core::decode(uint32_t instr_code) const {
       exe_flags.use_rs1 = 1;
       exe_flags.use_imm = 1;
       exe_flags.alu_s2_imm = 1;
-      imm = // TODO:
+      imm = sext((instr_code >> 20) & 0xfff, 12);
       break;
     case Opcode::L:
     case Opcode::JALR: {
@@ -253,7 +253,7 @@ std::shared_ptr<Instr> Core::decode(uint32_t instr_code) const {
       exe_flags.use_rs1 = 1;
       exe_flags.use_imm = 1;
       exe_flags.alu_s2_imm = 1;
-      imm = // TODO:
+      imm = sext((instr_code >> 20) & 0xfff, 12);
     } break;
     case Opcode::SYS: {
       exe_flags.use_imm = 1;
@@ -264,7 +264,7 @@ std::shared_ptr<Instr> Core::decode(uint32_t instr_code) const {
           exe_flags.use_rs1 = 1;
         }
       }
-      imm = // TODO:
+      imm = (instr_code >> 20) & 0xfff;
     } break;
     case Opcode::FENCE:
       break;
@@ -278,7 +278,7 @@ std::shared_ptr<Instr> Core::decode(uint32_t instr_code) const {
     exe_flags.use_rs2 = 1;
     exe_flags.use_imm = 1;
     exe_flags.alu_s2_imm = 1;
-    imm = // TODO:
+    imm = sext(((instr_code >> 25) << 5) | ((instr_code >> 7) & 0x1f), 12);
   } break;
 
   case InstType::B: {
@@ -286,21 +286,21 @@ std::shared_ptr<Instr> Core::decode(uint32_t instr_code) const {
     exe_flags.use_rs2 = 1;
     exe_flags.use_imm = 1;
     exe_flags.alu_s2_imm = 1;
-    imm = // TODO:
+    imm = sext(((instr_code >> 31) << 12) | (((instr_code >> 7) & 0x1) << 11) | (((instr_code >> 25) & 0x3f) << 5) | (((instr_code >> 8) & 0xf) << 1), 13);
   } break;
 
   case InstType::U: {
     exe_flags.use_rd  = 1;
     exe_flags.use_imm = 1;
     exe_flags.alu_s2_imm = 1;
-    imm = // TODO:
+    imm = instr_code & 0xfffff000;
   } break;
 
   case InstType::J: {
     exe_flags.use_rd  = 1;
     exe_flags.use_imm = 1;
     exe_flags.alu_s2_imm = 1;
-    imm = // TODO:
+    imm = sext(((instr_code >> 31) << 20) | (((instr_code >> 12) & 0xff) << 12) | (((instr_code >> 20) & 0x8) << 11) |  (((instr_code >> 21) & 0x3ff) << 1), 21);
   } break;
 
   default:
@@ -315,17 +315,80 @@ std::shared_ptr<Instr> Core::decode(uint32_t instr_code) const {
   switch (opcode) {
   case Opcode::LUI: {
     // RV32I: LUI
-    alu_op = // TODO:
+    alu_op = AluOp::ADD;
     break;
   }
   case Opcode::AUIPC: {
     // RV32I: AUIPC
-    alu_op = // TODO:
+    alu_op = AluOp::ADD;
     exe_flags.alu_s1_PC = 1;
     break;
   }
   case Opcode::R: {
-    alu_op = // TODO:
+    // switch
+    switch(func3) {
+      case 0: {
+        if (func7 == 0x00) {
+          alu_op = AluOp::ADD;
+        }
+        else if (func7 == 0x20) {
+          alu_op = AluOp::SUB;
+        }
+        else if (func7 == 0x01) {
+          alu_op = AluOp::MUL; // zmmul
+        }
+        break;
+      }
+      case 1: {
+        if (func7 == 0x01) {
+          alu_op = AluOp::MULH; //zmmul
+        }
+        else {
+          alu_op = AluOp::SLL;
+        }
+        break;
+      }
+      case 2: {
+        if (func7 == 0x01) {
+          alu_op = AluOp::MULHSU; //zmmul
+        }
+        else {
+          alu_op = AluOp::LTI;
+        }
+        break;
+      }
+      case 3: {
+        if (func7 == 0x01) {
+          alu_op = AluOp::MULHU; //zmmul
+        }
+        else {
+          alu_op = AluOp::LTU;
+        }
+        break;
+      }
+      case 4: {
+        alu_op = AluOp::XOR;
+        break;
+      }
+      case 5: {
+        if (func7 & 0x20) {
+          alu_op = AluOp::SRA;
+        }
+        else {
+          alu_op = AluOp::SRL;
+        }
+        break;
+      }
+      case 6: {
+        alu_op = AluOp::OR;
+        break;
+      }
+      case 7: {
+        alu_op = AluOp::AND;
+        break;
+      }
+    }
+    break;
   }
   case Opcode::I: {
     alu_op = // TODO: 
