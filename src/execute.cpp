@@ -42,31 +42,34 @@ uint32_t Core::alu_unit(const Instr &instr, uint32_t rs1_data, uint32_t rs2_data
   case AluOp::NONE:
     break;
   case AluOp::ADD: {
-    rd_data = // TODO:
+    rd_data = alu_s1 + alu_s2;
     break;
   }
   case AluOp::SUB: {
-    rd_data = // TODO:
+    rd_data = alu_s1 - alu_s2;
     break;
   }
   case AluOp::MUL: {
-    rd_data = // TODO;
+    rd_data = alu_s1 * alu_s2;
     break;
   }
   case AluOp::MULH: {
-    rd_data = // TODO;
+    int64_t result = (int64_t)(int32_t)alu_s1 * (int64_t)(int32_t)alu_s2;
+    rd_data = (uint32_t)(result >> 32);
     break;
   }
   case AluOp::MULHSU: {
-    rd_data = // TODO;
+    int64_t result = (int64_t)(int32_t)alu_s1 * (uint32_t)alu_s2;
+    rd_data = (uint32_t)(result >> 32);
     break;
   }
   case AluOp::MULHU: {
-    rd_data = // TODO;
+    uint64_t result = (uint64_t)alu_s1 * (uint64_t)alu_s2;
+    rd_data = (uint32_t)(result >> 32);
     break;
   }
   case AluOp::AND: {
-    rd_data = // TODO:
+    rd_data = 
     break;
   }
   case AluOp::OR: {
